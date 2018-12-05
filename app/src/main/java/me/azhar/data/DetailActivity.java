@@ -14,10 +14,15 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        String itemId=getIntent().getExtras().getString(DataItemAdapter.ITEM_ID_KEY);
-        DataItem item=SampleDataProvider.dataItemMap.get(itemId);
-        Toast.makeText(this, "item name "+item.getItemName(), Toast.LENGTH_SHORT).show();
+//        String itemId = getIntent().getExtras().getString(DataItemAdapter.ITEM_ID_KEY);
+//        DataItem item = SampleDataProvider.dataItemMap.get(itemId);
+        DataItem item = getIntent().getExtras().getParcelable(DataItemAdapter.ITEM_KEY);
+        if (item != null) {
+            Toast.makeText(this, "Received item " + item.getItemName(),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Didn't receive any data", Toast.LENGTH_SHORT).show();
+        }
 
     }
 }

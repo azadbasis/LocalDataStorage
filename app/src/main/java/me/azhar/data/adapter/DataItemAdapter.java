@@ -22,6 +22,7 @@ import me.azhar.data.model.DataItem;
 public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHolder> {
 
     public static final String ITEM_ID_KEY = "item_id_key";
+    public static final String ITEM_KEY = "item_key";
     private List<DataItem> mItems;
     private Context mContext;
 
@@ -55,9 +56,10 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "item selected " + item.getItemName(), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(mContext, "item selected " + item.getItemName(), Toast.LENGTH_SHORT).show();
                 Intent intent=new Intent(mContext, DetailActivity.class);
-                intent.putExtra(ITEM_ID_KEY,item.getItemId());
+                //intent.putExtra(ITEM_ID_KEY,item.getItemId());
+                intent.putExtra(ITEM_KEY,item);
                 mContext.startActivity(intent);
             }
         });
