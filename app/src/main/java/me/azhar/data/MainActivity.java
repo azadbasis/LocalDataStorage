@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -25,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import me.azhar.data.adapter.DataItemAdapter;
-import me.azhar.data.database.DBHelper;
+import me.azhar.data.database.DataSource;
 import me.azhar.data.model.DataItem;
 import me.azhar.data.sample.SampleDataProvider;
 import me.azhar.data.utils.JSONHelper;
@@ -39,14 +37,16 @@ public class MainActivity extends AppCompatActivity {
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
     private boolean permissionGranted;
 
-    SQLiteDatabase database;
+    DataSource mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SQLiteOpenHelper dbHelper = new DBHelper(this);
-        database=dbHelper.getWritableDatabase();
+
+        mDataSource = new DataSource(this);
+        mDataSource.open();
+
         Toast.makeText(this, "database acquired", Toast.LENGTH_SHORT).show();
         checkPermissions();
 
@@ -109,6 +109,18 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDataSource.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDataSource.open();
     }
 
     @Override
