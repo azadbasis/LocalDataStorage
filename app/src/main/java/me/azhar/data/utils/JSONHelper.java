@@ -11,8 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
+import me.azhar.data.R;
 import me.azhar.data.model.DataItem;
 
 public class JSONHelper {
@@ -75,6 +78,37 @@ public class JSONHelper {
         }
         return null;
     }
+
+
+    public static List<DataItem> importFromResource(Context context) {
+
+        InputStreamReader reader = null;
+        InputStream inputStream = null;
+
+        try {
+            inputStream = context.getResources().openRawResource(R.raw.menuitems);
+            reader = new InputStreamReader(inputStream);
+            Gson gson = new Gson();
+            DataItems dataItems = gson.fromJson(reader, DataItems.class);
+            return dataItems.getDataItems();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     static class DataItems {
         List<DataItem> dataItems;
