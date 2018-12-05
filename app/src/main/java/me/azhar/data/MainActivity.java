@@ -47,31 +47,20 @@ public class MainActivity extends AppCompatActivity {
 
         mDataSource = new DataSource(this);
         mDataSource.open();
-
+        mDataSource.seedDatabase(dataItemList);
         Toast.makeText(this, "database acquired", Toast.LENGTH_SHORT).show();
-        long numItems = mDataSource.getDataItemCount();
-        if (numItems == 0) {
-            for (DataItem item : dataItemList) {
-                try {
-                    mDataSource.createDataItem(item);
-                } catch (SQLiteException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(this, "Data inserted!", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "Data already inserted!", Toast.LENGTH_SHORT).show();
-        }
-        checkPermissions();
 
-        Collections.sort(dataItemList, new Comparator<DataItem>() {
+        checkPermissions();
+       /* Collections.sort(dataItemList, new Comparator<DataItem>() {
             @Override
             public int compare(DataItem o1, DataItem o2) {
                 return o1.getItemName().compareTo(o2.getItemName());
             }
-        });
+        });*/
+       List<DataItem> listFromDB=mDataSource.getAllItems();
 
-        DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
+      //  DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
+        DataItemAdapter adapter = new DataItemAdapter(this, listFromDB);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
