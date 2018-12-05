@@ -2,6 +2,7 @@ package me.azhar.data;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ListView;
 
 import java.util.Collections;
@@ -31,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
 
 
-        ListView listView = (ListView) findViewById(android.R.id.list);
-        listView.setAdapter(adapter);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvItems);
+        recyclerView.setAdapter(adapter);
 
 
     }
