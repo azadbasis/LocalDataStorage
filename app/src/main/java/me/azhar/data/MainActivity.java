@@ -7,17 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
-
-
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import me.azhar.data.R;
-import me.azhar.data.SigninActivity;
 import me.azhar.data.adapter.DataItemAdapter;
 import me.azhar.data.model.DataItem;
 import me.azhar.data.sample.SampleDataProvider;
@@ -58,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_signin:
                 Intent intent = new Intent(this, SigninActivity.class);
                 startActivityForResult(intent, SIGNIN_REQUEST);
+            case R.id.action_settings:
+                Intent settingIntent = new Intent(this, PrefsActivity.class);
+                startActivity(settingIntent);
         }
         return super.onOptionsItemSelected(item);
     }
