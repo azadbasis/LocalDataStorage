@@ -1,6 +1,7 @@
 package me.azhar.data.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import me.azhar.data.R;
@@ -38,7 +41,18 @@ public class DataItemAdapter extends ArrayAdapter<DataItem> {
         DataItem item = mDataItems.get(position);
 
         tvName.setText(item.getItemName());
-        imageView.setImageResource(R.drawable.apple_pie);
+        //imageView.setImageResource(R.drawable.apple_pie);
+
+        String imageFile=item.getImage();
+        InputStream inputStream= null;
+        try {
+            inputStream = getContext().getAssets().open(imageFile);
+            Drawable d=Drawable.createFromStream(inputStream,null);
+            imageView.setImageDrawable(d);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         return convertView;
     }
