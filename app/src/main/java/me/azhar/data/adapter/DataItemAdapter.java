@@ -1,6 +1,7 @@
 package me.azhar.data.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,11 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import me.azhar.data.DetailActivity;
 import me.azhar.data.R;
 import me.azhar.data.model.DataItem;
 
 public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHolder> {
 
+    public static final String ITEM_ID_KEY = "item_id_key";
     private List<DataItem> mItems;
     private Context mContext;
 
@@ -53,6 +56,9 @@ public class DataItemAdapter extends RecyclerView.Adapter<DataItemAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "item selected " + item.getItemName(), Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(mContext, DetailActivity.class);
+                intent.putExtra(ITEM_ID_KEY,item.getItemId());
+                mContext.startActivity(intent);
             }
         });
         holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
