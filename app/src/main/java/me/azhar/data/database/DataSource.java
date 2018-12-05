@@ -1,8 +1,12 @@
 package me.azhar.data.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import me.azhar.data.model.DataItem;
 
 public class DataSource {
 
@@ -23,5 +27,15 @@ public class DataSource {
 
     public void close() {
         mDatabase.close();
+    }
+
+    public DataItem createDataItem(DataItem item) {
+        ContentValues values = item.toValues();
+        mDatabase.insert(ItemsTable.TABLE_ITEMS, null, values);
+        return item;
+    }
+
+    public long getDataItemCount(){
+        return DatabaseUtils.queryNumEntries(mDatabase,ItemsTable.TABLE_ITEMS);
     }
 }

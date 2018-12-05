@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -48,6 +49,19 @@ public class MainActivity extends AppCompatActivity {
         mDataSource.open();
 
         Toast.makeText(this, "database acquired", Toast.LENGTH_SHORT).show();
+        long numItems = mDataSource.getDataItemCount();
+        if (numItems == 0) {
+            for (DataItem item : dataItemList) {
+                try {
+                    mDataSource.createDataItem(item);
+                } catch (SQLiteException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, "Data inserted!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Data already inserted!", Toast.LENGTH_SHORT).show();
+        }
         checkPermissions();
 
         Collections.sort(dataItemList, new Comparator<DataItem>() {
