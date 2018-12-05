@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -89,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.action_import:
+                List<DataItem> dataItems = JSONHelper.importFromJSON(this);
+                if (dataItems != null) {
+                    for (DataItem dataItem :
+                            dataItems) {
+                        Log.i(TAG, "onOptionsItemSelected: " + dataItem.getItemName());
+                    }
+                }
                 return true;
 
         }

@@ -53,6 +53,26 @@ public class JSONHelper {
 
 
     public static List<DataItem> importFromJSON(Context context) {
+
+        FileReader reader = null;
+
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FILE_NAME);
+            reader = new FileReader(file);
+            Gson gson = new Gson();
+            DataItems dataItems = gson.fromJson(reader, DataItems.class);
+            return dataItems.getDataItems();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return null;
     }
 
