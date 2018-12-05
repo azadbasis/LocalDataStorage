@@ -1,27 +1,38 @@
 package me.azhar.data;
 
 import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.TextView;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import me.azhar.data.adapter.DataItemAdapter;
+import me.azhar.data.model.DataItem;
+import me.azhar.data.sample.SampleDataProvider;
+import me.azhar.data.utils.JSONHelper;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    private static final int REQUEST_PERMISSION_WRITE = 1001;
-    TextView output;
-    public static final String FILE_NAME = "lorem_ipsum.txt";
+    private static final int SIGNIN_REQUEST = 1001;
+    public static final String MY_GLOBAL_PREFS = "my_global_prefs";
+    private static final int REQUEST_PERMISSION_WRITE = 1002;
+    private static final String TAG = "MainActivity";
+    List<DataItem> dataItemList = SampleDataProvider.dataItemList;
     private boolean permissionGranted;
 
     @Override
@@ -29,66 +40,76 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        output = (TextView) findViewById(R.id.outputText);
-        output.setText(R.string.ready_to_code);
-    }
+        checkPermissions();
 
-    private File getFile() {
-        return new File(
-                Environment.getExternalStorageDirectory(), FILE_NAME);
-    }
-
-    public void onCreateButtonClick(View view) {
-
-        if (!permissionGranted) {
-            checkPermissions();
-            return;
-        }
-
-        String string = getString(R.string.lorem_ipsum);
-
-        FileOutputStream fileOutputStream = null;
-        File file = getFile();
-
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(string.getBytes());
-            Toast.makeText(this, "File written: " + FILE_NAME,
-                    Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Exception: " + e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        } finally {
-            try {
-                fileOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        Collections.sort(dataItemList, new Comparator<DataItem>() {
+            @Override
+            public int compare(DataItem o1, DataItem o2) {
+                return o1.getItemName().compareTo(o2.getItemName());
             }
+        });
+
+        DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvItems);
+        if (grid) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         }
+
+        recyclerView.setAdapter(adapter);
     }
 
-    public void onReadButtonClick(View view) {
-        if (!permissionGranted) {
-            checkPermissions();
-            return;
-        }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    public void onDeleteButtonClick(View view) {
-        if (!permissionGranted) {
-            checkPermissions();
-            return;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_signin:
+                Intent intent = new Intent(this, SigninActivity.class);
+                startActivityForResult(intent, SIGNIN_REQUEST);
+                return true;
+            case R.id.action_settings:
+                // Show the settings screen
+                Intent settingsIntent = new Intent(this, PrefsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.action_export:
+                boolean result = JSONHelper.exportToJSON(this, dataItemList);
+                if (result) {
+                    Toast.makeText(this, "Data exported", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Export failed", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.action_import:
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == SIGNIN_REQUEST) {
+            String email = data.getStringExtra(SigninActivity.EMAIL_KEY);
+            Toast.makeText(this, "You signed in as " + email, Toast.LENGTH_SHORT).show();
+
+            SharedPreferences.Editor editor =
+                    getSharedPreferences(MY_GLOBAL_PREFS, MODE_PRIVATE).edit();
+            editor.putString(SigninActivity.EMAIL_KEY, email);
+            editor.apply();
+
         }
 
-        File file = getFile();
-        if (file.exists()) {
-            file.delete();
-            Toast.makeText(this, "File deleted", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "File doesn't exist", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /* Checks if external storage is available for read and write */
@@ -143,4 +164,5 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
 }
